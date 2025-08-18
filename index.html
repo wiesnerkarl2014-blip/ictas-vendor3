@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICTAS Beef Vendor Application</title>
+    <meta name="description" content="Secure Single-Page Platform for Beef Vendor Registration, Commodity Registration, and Trading on Botswana Mercantile Exchange">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header, nav, main, footer {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background-color: #e0f7fa;
+            text-align: center;
+            border-bottom: 2px solid #00bcd4;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
+        }
+        nav a {
+            text-decoration: none;
+            color: #00796b;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #e0f2f1;
+        }
+        section {
+            margin-bottom: 40px;
+            display: none;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        section.active {
+            display: block;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+            max-width: 600px;
+        }
+        label {
+            font-weight: bold;
+            color: #004d40;
+        }
+        input, select, textarea, button {
+            padding: 8px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #009688;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #00796b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0f2f1;
+            color: #004d40;
+        }
+        tr:nth-child(even) {
+            background-color: #f1f8f7;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #004d40;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .validation-message {
+            color: #388e3c;
+            font-size: 14px;
+        }
+        .validation-error {
+            color: #d32f2f;
+            font-size: 14px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        @media (max-width: 600px) {
+            nav ul {
+                flex-direction: column;
+                text-align: center;
+            }
+            form {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ICTAS Beef Vendor Registration & BMX Trading</h1>
+        <p>Secure Platform for Beef Registration and Trading on Botswana Mercantile Exchange</p>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#home" data-section="home">Home</a></li>
+            <li><a href="#vendor-registration" data-section="vendor-registration">Vendor ID Registration</a></li>
+            <li><a href="#commodity-registration" data-section="commodity-registration">Commodity Registration</a></li>
+            <li><a href="#bmx-trading" data-section="bmx-trading">BMX Trading</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="home" class="active">
+            <h2>Welcome to ICTAS</h2>
+            <p>Register and trade beef on BMX with full traceability and tax compliance. Complies with Botswana laws for KYC/AML, trading regulations, and BURS requirements. Select a section to proceed:</p>
+            <ul>
+                <li><a href="#vendor-registration">Vendor ID Registration</a>: Complete KYC and set up 2FA.</li>
+                <li><a href="#commodity-registration">Beef Commodity Registration</a>: Register beef batches with ISO-compliant details and IoT-based tracking.</li>
+                <li><a href="#bmx-trading">BMX Trading</a>: Trade beef via CBTs, MBTs, or cash, with BURS tax linkage.</li>
+            </ul>
+        </section>
+
+        <section id="vendor-registration">
+            <h2>Vendor ID Registration (KYC & 2FA)</h2>
+            <p>Comply with Financial Intelligence Act 2019: Identity verification, address proof, business details. Data retained 20 years. All fields marked with * are required.</p>
+            <form id="vendorForm" action="/submit-vendor" method="POST" enctype="multipart/form-data">
+                <label for="fullName">Full Name *</label>
+                <input type="text" id="fullName" name="fullName" required aria-required="true">
+
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required aria-required="true">
+
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required aria-required="true">
+
+                <label for="phone">Phone Number (for 2FA via SMS OTP) *</label>
+                <input type="tel" id="phone" name="phone" required aria-required="true">
+
+                <label for="idType">KYC ID Type *</label>
+                <select id="idType" name="idType" required aria-required="true">
+                    <option value="" disabled selected>Select ID Type</option>
+                    <option value="nationalID">National ID</option>
+                    <option value="passport">Passport</option>
+                    <option value="businessLicense">Business License/Registration</option>
+                </select>
+
+                <label for="idNumber">ID Number *</label>
+                <input type="text" id="idNumber" name="idNumber" required aria-required="true">
+
+                <label for="kycDocument">Upload KYC Proof Document (PDF/Image) *</label>
+                <input type="file" id="kycDocument" name="kycDocument" accept=".pdf,image/*" required aria-required="true">
+
+                <label for="businessAddress">Business Address/Proof of Residence *</label>
+                <input type="text" id="businessAddress" name="businessAddress" required aria-required="true">
+                <button type="button" onclick="getLocation('businessAddress')">Get Current Location</button>
+
+                <label for="directorsDetails">Directors' Details (for Non-Individuals) *</label>
+                <textarea id="directorsDetails" name="directorsDetails" required aria-required="true"></textarea>
+
+                <label for="bankProof">Upload Proof of Bank Account (PDF/Image) *</label>
+                <input type="file" id="bankProof" name="bankProof" accept=".pdf,image/*" required aria-required="true">
+
+                <button type="submit">Register Vendor ID & Setup 2FA</button>
+            </form>
+            <p>After submission, receive SMS OTP for 2FA. KYC review: 24-48 hours. Complies with FIA 2019.</p>
+        </section>
+
+        <section id="commodity-registration">
+            <h2>Beef Commodity Registration</h2>
+            <p>Register beef batch with ISO-compliant details and IoT-based tracking. Upload Certificate of Authenticity and Proof of Origin. All fields marked with * are required. Incentive: P10,000 per batch, P15,000 for >10 batches. Note: -P1.00/kg penalty for measles-affected beef.</p>
+            <form id="commodityForm" action="/submit-commodity" method="POST" enctype="multipart/form-data">
+                <label for="beefGrade">Beef Grade *</label>
+                <select id="beefGrade" name="beefGrade" required aria-required="true" onchange="updatePriceDisplay()">
+                    <option value="" disabled selected>Select Grade</option>
+                    <option value="SP">SP (Prime, P51.00/kg)</option>
+                    <option value="SS">SS (Super, P49.00/kg)</option>
+                    <option value="S1">S1 (Grade 1, P44.00/kg)</option>
+                    <option value="S2">S2 (Grade 2, P41.00/kg)</option>
+                    <option value="S3">S3 (Grade 3, P40.00/kg)</option>
+                    <option value="S4">S4 (Grade 4, P36.00/kg)</option>
+                </select>
+                <p id="priceInfo" class="tooltip">Base Price: <span id="basePrice">Select a grade</span><span class="tooltiptext">Includes handling fee (P0.10/kg), ±5% sentiment adjustment, -P1.00/kg for measles-affected beef if applicable. Current sentiment: +2%.</span></p>
+
+                <label for="batchSize">Batch Size (kg, min 100) *</label>
+                <input type="number" id="batchSize" name="batchSize" min="100" required aria-required="true">
+
+                <label for="gpsCoordinates">GPS Coordinates *</label>
+                <input type="text" id="gpsCoordinates" name="gpsCoordinates" required aria-required="true">
+                <button type="button" onclick="getLocation('gpsCoordinates')">Get Current Location</button>
+
+                <label for="proofOfOrigin">Proof of Origin Details *</label>
+                <textarea id="proofOfOrigin" name="proofOfOrigin" required aria-required="true" placeholder="Enter farm name, slaughterhouse, and date of origin"></textarea>
+
+                <label for="trackingId">IoT Tracking ID *</label>
+                <input type="text" id="trackingId" name="trackingId" required aria-required="true" placeholder="Enter IoT-based tracking ID">
+                <button type="button" onclick="validateTracking()">Validate Tracking</button>
+                <p id="validationMessage" class="hidden"></p>
+
+                <label for="authCertificate">Upload Certificate of Authenticity (PDF) *</label>
+                <input type="file" id="authCertificate" name="authCertificate" accept=".pdf" required aria-required="true">
+
+                <label for="originCertificate">Upload Proof of Origin Certificate (PDF) *</label>
+                <input type="file" id="originCertificate" name="originCertificate" accept=".pdf" required aria-required="true">
+
+                <button type="submit">Register Commodity Batch</button>
+            </form>
+            <p>Certificates verified per ISO standards (e.g., ISO 22000). Tracking validated via Hyperledger Fabric blockchain. Approval generates TID.</p>
+        </section>
+
+        <section id="bmx-trading">
+            <h2>Botswana Mercantile Exchange (BMX) Beef Trading</h2>
+            <p>Trade beef via CBTs, MBTs, or cash. Requires verified Vendor ID. Complies with Securities Act 2014, Financial Intelligence Act 2019, and BURS tax regulations. Real-time prices, order book, derivatives trading, settlement, portfolio management.</p>
+
+            <h3>Market Index (August 11, 2025)</h3>
+            <ul>
+                <li>Beef: BWP 48.45–54.72/kg (US$3.59–4.05)</li>
+                <li>Sentiment: +2% | Volume: 4,000/day</li>
+                <li>Exchange Rate: 1 USD ≈ 13.5 BWP</li>
+            </ul>
+            <p class="tooltip">Price Range<span class="tooltiptext">Based on SP grade (P51.00/kg), includes handling fee (P0.10/kg), ±5% sentiment adjustment, 1.5% transaction fee for trades.</span></p>
+
+            <h3>Order Book</h3>
+            <table>
+                <tr>
+                    <th colspan="3">Bids (Buy Orders)</th>
+                </tr>
+                <tr>
+                    <th>Price</th>
+                    <th>Qty (kg)</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>P48.50</td>
+                    <td>500</td>
+                    <td><button onclick="matchOrder('buy', '48.50', '500')">Match</button></td>
+                </tr>
+                <tr>
+                    <td>P48.00</td>
+                    <td>1000</td>
+                    <td><button onclick="matchOrder('buy', '48.00', '1000')">Match</button></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th colspan="3">Asks (Sell Orders)</th>
+                </tr>
+                <tr>
+                    <th>Price</th>
+                    <th>Qty (kg)</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>P49.50</td>
+                    <td>300</td>
+                    <td><button onclick="matchOrder('sell', '49.50', '300')">Match</button></td>
+                </tr>
+                <tr>
+                    <td>P50.00</td>
+                    <td>800</td>
+                    <td><button onclick="matchOrder('sell', '50.00', '800')">Match</button></td>
+                </tr>
+            </table>
+
+            <h3>Place Order</h3>
+            <form id="orderForm" action="/submit-order" method="POST">
+                <label for="action">Action *</label>
+                <select id="action" name="action" required aria-required="true">
+                    <option value="" disabled selected>Select</option>
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                </select>
+
+                <label for="transactionType">Transaction Type *</label>
+                <select id="transactionType" name="transactionType" required aria-required="true" onchange="updateOrderPriceDisplay()">
+                    <option value="" disabled selected>Select</option>
+                    <option value="CBT">CBT (Tokenized)</option>
+                    <option value="MBT">MBT (Market Token)</option>
+                    <option value="Cash">Cash</option>
+                </select>
+
+                <label for="beefGradeOrder">Beef Grade *</label>
+                <select id="beefGradeOrder" name="beefGradeOrder" required aria-required="true" onchange="updateOrderPriceDisplay()">
+                    <option value="" disabled selected>Select Grade</option>
+                    <option value="SP">SP (Prime, P51.00/kg)</option>
+                    <option value="SS">SS (Super, P49.00/kg)</option>
+                    <option value="S1">S1 (Grade 1, P44.00/kg)</option>
+                    <option value="S2">S2 (Grade 2, P41.00/kg)</option>
+                    <option value="S3">S3 (Grade 3, P40.00/kg)</option>
+                    <option value="S4">S4 (Grade 4, P36.00/kg)</option>
+                </select>
+                <p id="orderPriceInfo" class="tooltip">Base Price: <span id="orderBasePrice">Select a grade</span><span class="tooltiptext">Includes handling fee (P0.10/kg), ±5% sentiment adjustment, 1.5% transaction fee for trades, -P1.00/kg for measles-affected beef if applicable. Cash transactions exclude tokenization fees.</span></p>
+
+                <label for="quantity">Quantity (kg, min 100) *</label>
+                <input type="number" id="quantity" name="quantity" min="100" required aria-required="true" oninput="updateOrderPriceDisplay()">
+
+                <label for="price">Price per Unit (BWP) *</label>
+                <input type="number" id="price" name="price" min="0" step="0.01" required aria-required="true">
+
+                <label for="derivativeType">Derivative Type (Optional, CBT/MBT only)</label>
+                <select id="derivativeType" name="derivativeType">
+                    <option value="None">None</option>
+                    <option value="Option-Call">Option - Call</option>
+                    <option value="Option-Put">Option - Put</option>
+                    <option value="Future">Future</option>
+                </select>
+
+                <label for="expiryDate" class="hidden">Expiry Date (for Derivatives)</label>
+                <input type="date" id="expiryDate" name="expiryDate" class="hidden">
+
+                <label for="strikePrice" class="hidden">Strike Price (for Options)</label>
+                <input type="number" id="strikePrice" name="strikePrice" min="0" step="0.01" class="hidden">
+
+                <button type="submit">Place Order</button>
+            </form>
+
+            <h3>Portfolio Management</h3>
+            <table>
+                <tr>
+                    <th>Asset</th>
+                    <th>Quantity (kg)</th>
+                    <th>Value (BWP)</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>Beef CBT (SP)</td>
+                    <td>1000</td>
+                    <td>P48,450</td>
+                    <td><button onclick="matchOrder('sell', '48.45', '1000')">Sell</button></td>
+                </tr>
+            </table>
+
+            <h3>Trade Settlement</h3>
+            <p>Settled Trades: 15 | Total Value: P1,225,000</p>
+            <button onclick="initiateSettlement()">Initiate Settlement</button>
+            <p>Trading complies with Securities Act 2014: Tokenized assets, spot/derivatives trading, cash transactions. 15% liquidity boost. Trade settlements reported to BURS for tax compliance.</p>
+
+            <h3>BURS Tax Compliance</h3>
+            <p>Ensure tax compliance with Botswana Unified Revenue Service (BURS). Generate a tax clearance certificate or file returns via the BURS portal.</p>
+            <button onclick="requestTaxClearance()">Request Tax Clearance Certificate</button>
+            <p><a href="https://www.burs.org.bw" target="_blank">Visit BURS Portal</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Sandock Austral Defence. Confidential. Secure Platform.</p>
+    </footer>
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Order</h3>
+            <p id="modalDetails"></p>
+            <button onclick="confirmOrder()">Confirm</button>
+            <button onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+    <script>
+        // Pricing data from Beef Pricing Model
+        const beefPrices = {
+            SP: 51.00,
+            SS: 49.00,
+            S1: 44.00,
+            S2: 41.00,
+            S3: 40.00,
+            S4: 36.00
+        };
+        const handlingFee = 0.10;
+        const transactionFee = 0.015; // 1.5%
+        const minAdjustment = 0.95; // -5%
+        const maxAdjustment = 1.05; // +5%
+        const sentimentAdjustment = 0.02; // Current +2% for display, but range is ±5%
+        const measlesPenalty = 1.00;
+
+        // Geolocation for "Get Current Location" button
+        function getLocation(inputId) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById(inputId).value = `${position.coords.latitude}, ${position.coords.longitude}`;
+                    },
+                    (error) => {
+                        alert("Geolocation failed: " + error.message);
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Update price display with range
+        function updatePriceDisplay() {
+            const gradeSelect = document.getElementById("beefGrade");
+            const priceInfo = document.getElementById("basePrice");
+            const grade = gradeSelect.value;
+            if (grade && beefPrices[grade]) {
+                const basePrice = beefPrices[grade];
+                const baseWithHandling = basePrice + handlingFee;
+                const adjustedMin = baseWithHandling * minAdjustment;
+                const adjustedMax = baseWithHandling * maxAdjustment;
+                priceInfo.textContent = `P${basePrice.toFixed(2)}/kg (Adjusted Range: P${(adjustedMin - measlesPenalty).toFixed(2)}–P${adjustedMax.toFixed(2)}/kg)`;
+            } else {
+                priceInfo.textContent = "Select a grade";
+            }
+        }
+
+        // Simulate tracking validation
+        function validateTracking() {
+            const trackingId = document.getElementById("trackingId").value;
+            const proofOfOrigin = document.getElementById("proofOfOrigin").value;
+            const validationMessage = document.getElementById("validationMessage");
+
+            validationMessage.classList.remove("hidden", "validation-message", "validation-error");
+
+            if (!trackingId || !proofOfOrigin) {
+                validationMessage.textContent = "Please enter both Tracking ID and Proof of Origin details.";
+                validationMessage.classList.add("validation-error");
+                return;
+            }
+
+            // Simulate blockchain validation (Hyperledger Fabric)
+            if (trackingId.length > 5 && proofOfOrigin.length > 10) {
+                validationMessage.textContent = "Tracking ID and Proof of Origin validated successfully!";
+                validationMessage.classList.add("validation-message");
+            } else {
+                validationMessage.textContent = "Invalid Tracking ID or Proof of Origin details.";
+                validationMessage.classList.add("validation-error");
+            }
+        }
+
+        // Update order price display with range
+        function updateOrderPriceDisplay() {
+            const gradeSelect = document.getElementById("beefGradeOrder");
+            const transactionType = document.getElementById("transactionType").value;
+            const quantity = parseInt(document.getElementById("quantity").value) || 100;
+            const priceInput = document.getElementById("price");
+            const priceInfo = document.getElementById("orderBasePrice");
+            const grade = gradeSelect.value;
+
+            if (grade && beefPrices[grade]) {
+                let basePrice = beefPrices[grade];
+                let baseWithHandling = basePrice + handlingFee;
+                let adjustedMin = baseWithHandling * minAdjustment;
+                let adjustedMax = baseWithHandling * maxAdjustment;
+                if (transactionType !== "Cash") {
+                    adjustedMin *= (1 + transactionFee);
+                    adjustedMax *= (1 + transactionFee);
+                }
+                priceInput.value = (baseWithHandling * (1 + sentimentAdjustment)).toFixed(2);
+                priceInfo.textContent = `P${basePrice.toFixed(2)}/kg (Adjusted Range: P${(adjustedMin - (transactionType === "Cash" ? 0 : measlesPenalty)).toFixed(2)}–P${adjustedMax.toFixed(2)}/kg)`;
+            } else {
+                priceInput.value = "";
+                priceInfo.textContent = "Select a grade";
+            }
+        }
+
+        // Toggle derivative fields visibility and requirement
+        document.getElementById("derivativeType").addEventListener("change", function () {
+            const transactionType = document.getElementById("transactionType").value;
+            const isDerivative = this.value !== "None" && transactionType !== "Cash";
+            const expiryDate = document.getElementById("expiryDate");
+            const strikePrice = document.getElementById("strikePrice");
+            const expiryLabel = document.querySelector("label[for='expiryDate']");
+            const strikeLabel = document.querySelector("label[for='strikePrice']");
+            expiryDate.classList.toggle("hidden", !isDerivative);
+            strikePrice.classList.toggle("hidden", !isDerivative);
+            expiryLabel.classList.toggle("hidden", !isDerivative);
+            strikeLabel.classList.toggle("hidden", !isDerivative);
+            expiryDate.required = isDerivative;
+            strikePrice.required = isDerivative && this.value.includes("Option");
+        });
+
+        // Form validation for quantity and price
+        document.getElementById("orderForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const quantity = document.getElementById("quantity").value;
+            const price = document.getElementById("price").value;
+            const transactionType = document.getElementById("transactionType").value;
+            const grade = document.getElementById("beefGradeOrder").value;
+            const action = document.getElementById("action").value;
+
+            if (!/^\d+$/.test(quantity) || quantity < 100) {
+                alert("Quantity must be a positive number (minimum 100 kg).");
+                return;
+            }
+            if (!/^\d+(\.\d{1,2})?$/.test(price) || price <= 0) {
+                alert("Price must be a positive number with up to two decimal places.");
+                return;
+            }
+
+            // Show confirmation modal
+            const modalDetails = document.getElementById("modalDetails");
+            modalDetails.textContent = `Place ${action} order for ${quantity} kg of ${grade} beef via ${transactionType} at P${price}/kg?`;
+            document.getElementById("confirmModal").style.display = "block";
+        });
+
+        // Modal functions
+        function confirmOrder() {
+            alert("Order placed successfully!");
+            document.getElementById("orderForm").submit(); // Submit form to backend
+        }
+
+        function closeModal() {
+            document.getElementById("confirmModal").style.display = "none";
+        }
+
+        // Placeholder for order matching
+        function matchOrder(type, price, quantity) {
+            alert(`Matching ${type} order: Price ${price}, Quantity ${quantity} kg`);
+            // Implement API call to https://bmx.co.bw/api/list
+        }
+
+        // Placeholder for selling assets
+        function sellAsset(asset, quantity) {
+            alert(`Selling ${quantity} kg of ${asset}`);
+            // Implement API call for selling
+        }
+
+        // Placeholder for settlement
+        function initiateSettlement() {
+            alert("Initiating trade settlement...");
+            // Implement API call to Hyperledger Fabric trade_settle chaincode
+        }
+
+        // BURS tax clearance request
+        function requestTaxClearance() {
+            alert("Requesting tax clearance... Redirecting to BURS portal.");
+            window.location.href = "https://www.burs.org.bw";
+        }
+
+        // SPA navigation
+        document.querySelectorAll("a[data-section]").forEach(link => {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+                const sectionId = this.dataset.section;
+                document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+                document.getElementById(sectionId).classList.add("active");
+            });
+        });
+    </script>
+</body>
+</html>
