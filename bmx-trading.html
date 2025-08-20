@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICTAS BMX Trading</title>
+    <style>
+        /* Basic styling for forms, tables, and layout */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 10px; }
+        form { max-width: 600px; }
+        input, select, button { display: block; margin-bottom: 10px; width: 100%; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        #status-message { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ICTAS Beef Vendor Registration & BMX Trading</h1>
+        <p>Secure Platform for Beef Registration and Trading on Botswana Mercantile Exchange</p>
+    </header>
+    
+    <nav>
+        <a href="vendor-id.html">Vendor ID Registration</a>
+        <a href="commodity.html">Commodity Registration</a>
+        <a href="bmx-trading.html">BMX Trading</a>
+    </nav>
+    
+    <section>
+        <h2>Welcome to ICTAS</h2>
+        <p>Register and trade beef on BMX with full traceability and tax compliance. Complies with Botswana laws for KYC/AML, trading regulations, and BURS requirements.</p>
+    </section>
+    
+    <section id="bmx-trading">
+        <h2>Botswana Mercantile Exchange (BMX) Beef Trading</h2>
+        <p>Trade beef via CBTs, MBTs, or cash. Requires verified Vendor ID. Complies with Securities Act 2014, Financial Intelligence Act 2019, and BURS tax regulations. Real-time prices, order book, derivatives trading, settlement, portfolio management.</p>
+        
+        <h3>Market Index (August 20, 2025)</h3>
+        <p>Beef: BWP 50.00–56.00/kg (US$3.70–4.15)</p>
+        <p>Sentiment: +3% | Volume: 4,200/day</p>
+        <p>Exchange Rate: 1 USD ≈ 13.5 BWP</p>
+        <p>Price Range: Based on SP grade (P51.00/kg), includes handling fee (P0.10/kg), ±5% sentiment adjustment, 1.5% transaction fee for trades.</p>
+        
+        <h3>Order Book</h3>
+        <h4>Bids (Buy Orders)</h4>
+        <table>
+            <tr><th>Price</th><th>Qty (kg)</th><th>Action</th></tr>
+            <tr><td>P48.50</td><td>500</td><td>Match</td></tr>
+            <tr><td>P48.00</td><td>1000</td><td>Match</td></tr>
+        </table>
+        
+        <h4>Asks (Sell Orders)</h4>
+        <table>
+            <tr><th>Price</th><th>Qty (kg)</th><th>Action</th></tr>
+            <tr><td>P49.50</td><td>300</td><td>Match</td></tr>
+            <tr><td>P50.00</td><td>800</td><td>Match</td></tr>
+        </table>
+        
+        <h3>Place Order</h3>
+        <form id="order-form">
+            <label>Action *</label>
+            <select name="action" required>
+                <option value="">Select</option>
+                <option value="Buy">Buy</option>
+                <option value="Sell">Sell</option>
+            </select>
+            
+            <label>Transaction Type *</label>
+            <select name="transactionType" required>
+                <option value="">Select</option>
+                <option value="CBT (Tokenized)">CBT (Tokenized)</option>
+                <option value="MBT (Market Token)">MBT (Market Token)</option>
+                <option value="Cash">Cash</option>
+            </select>
+            
+            <label>Beef Grade *</label>
+            <select name="beefGrade" required>
+                <option value="">Select Grade</option>
+                <option value="SP (Prime, P51.00/kg)">SP (Prime, P51.00/kg)</option>
+                <option value="SS (Super, P49.00/kg)">SS (Super, P49.00/kg)</option>
+                <option value="S1 (Grade 1, P44.00/kg)">S1 (Grade 1, P44.00/kg)</option>
+                <option value="S2 (Grade 2, P41.00/kg)">S2 (Grade 2, P41.00/kg)</option>
+                <option value="S3 (Grade 3, P40.00/kg)">S3 (Grade 3, P40.00/kg)</option>
+                <option value="S4 (Grade 4, P36.00/kg)">S4 (Grade 4, P36.00/kg)</option>
+            </select>
+            <p>Base Price: Select a grade. Includes handling fee (P0.10/kg), ±5% sentiment adjustment, 1.5% transaction fee for trades, -P1.00/kg for measles-affected beef if applicable. Cash transactions exclude tokenization fees.</p>
+            
+            <label>Quantity (kg, min 100) *</label>
+            <input type="number" name="quantity" min="100" required>
+            
+            <label>Price per Unit (BWP) *</label>
+            <input type="number" name="pricePerUnit" required>
+            
+            <label>Derivative Type (Optional, CBT/MBT only)</label>
+            <select name="derivativeType">
+                <option value="None">None</option>
+                <option value="Option - Call">Option - Call</option>
+                <option value="Option - Put">Option - Put</option>
+                <option value="Future">Future</option>
+            </select>
+            
+            <label>Expiry Date (for Derivatives)</label>
+            <input type="date" name="expiryDate">
+            
+            <label>Strike Price (for Options)</label>
+            <input type="number" name="strikePrice">
+            
+            <button type="submit">Place Order</button>
+        </form>
+        
+        <h3>Portfolio Management</h3>
+        <table>
+            <tr><th>Asset</th><th>Quantity (kg)</th><th>Value (BWP)</th><th>Action</th></tr>
+            <tr><td>Beef CBT (SP)</td><td>1000</td><td>P48,450</td><td>Sell</td></tr>
+        </table>
+        
+        <h3>Trade Settlement</h3>
+        <p>Settled Trades: 15 | Total Value: P1,225,000</p>
+        <button>Initiate Settlement</button>
+        <p>Trading complies with Securities Act 2014: Tokenized assets, spot/derivatives trading, cash transactions. 15% liquidity boost. Trade settlements reported to BURS for tax compliance.</p>
+        
+        <h3>BURS Tax Compliance</h3>
+        <p>Ensure tax compliance with Botswana Unified Revenue Service (BURS). Generate a tax clearance certificate or file returns via the BURS portal.</p>
+        <button>Request Tax Clearance Certificate</button>
+        <button>Visit BURS Portal</button>
+        
+        <p id="status-message"></p>
+    </section>
+    
+    <footer>
+        <p>© 2025 Sandock Austral Defence. Confidential. Secure Platform.</p>
+    </footer>
+    
+    <script>
+        const form = document.getElementById("order-form");
+        const message = document.getElementById("status-message");
+        if (!localStorage.getItem("vendorVerified")) {
+            message.innerText = "Error: Complete Vendor ID Registration first.";
+            form.style.display = "none";
+        } else if (!localStorage.getItem("commodityVerified")) {
+            message.innerText = "Error: Complete Commodity Registration with valid tracking.";
+            form.style.display = "none";
+        } else {
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                // Simulate order placement (add backend if needed)
+                message.innerText = "Order placed successfully!";
+            });
+        }
+    </script>
+</body>
+</html>
