@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICTAS Commodity Registration</title>
+    <style>
+        /* Basic styling for forms and layout */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 10px; }
+        form { max-width: 600px; }
+        input, select, button { display: block; margin-bottom: 10px; width: 100%; }
+        #status-message { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ICTAS Beef Vendor Registration & BMX Trading</h1>
+        <p>Secure Platform for Beef Registration and Trading on Botswana Mercantile Exchange</p>
+    </header>
+    
+    <nav>
+        <a href="vendor-id.html">Vendor ID Registration</a>
+        <a href="commodity.html">Commodity Registration</a>
+        <a href="bmx-trading.html">BMX Trading</a>
+    </nav>
+    
+    <section>
+        <h2>Welcome to ICTAS</h2>
+        <p>Register and trade beef on BMX with full traceability and tax compliance. Complies with Botswana laws for KYC/AML, trading regulations, and BURS requirements.</p>
+    </section>
+    
+    <section id="commodity-registration">
+        <h2>Beef Commodity Registration</h2>
+        <p>Register beef batch with ISO-compliant details and IoT-based tracking. Upload Certificate of Authenticity and Proof of Origin. All fields marked with * are required. Incentive: P10,000 per batch, P15,000 for >10 batches. Note: -P1.00/kg penalty for measles-affected beef.</p>
+        
+        <form id="commodity-form">
+            <label>Beef Grade *</label>
+            <select name="beefGrade" required>
+                <option value="">Select Grade</option>
+                <option value="SP (Prime, P51.00/kg)">SP (Prime, P51.00/kg)</option>
+                <option value="SS (Super, P49.00/kg)">SS (Super, P49.00/kg)</option>
+                <option value="S1 (Grade 1, P44.00/kg)">S1 (Grade 1, P44.00/kg)</option>
+                <option value="S2 (Grade 2, P41.00/kg)">S2 (Grade 2, P41.00/kg)</option>
+                <option value="S3 (Grade 3, P40.00/kg)">S3 (Grade 3, P40.00/kg)</option>
+                <option value="S4 (Grade 4, P36.00/kg)">S4 (Grade 4, P36.00/kg)</option>
+            </select>
+            <p>Base Price: Select a grade. Includes handling fee (P0.10/kg), ±5% sentiment adjustment, -P1.00/kg for measles-affected beef if applicable. Current sentiment: +3%.</p>
+            
+            <label>Batch Size (kg, min 100) *</label>
+            <input type="number" name="batchSize" min="100" required>
+            
+            <label>GPS Coordinates *</label>
+            <input type="text" name="gpsCoordinates" required>
+            <button type="button">Get Current Location</button>
+            
+            <label>Proof of Origin Details *</label>
+            <input type="text" name="proofOfOrigin" required>
+            
+            <label>IoT Tracking ID *</label>
+            <input type="text" name="iotTrackingId" required>
+            <button type="button">Validate Tracking</button>
+            
+            <label>Upload Certificate of Authenticity (PDF) *</label>
+            <input type="file" name="authenticityCert" accept=".pdf" required>
+            
+            <label>Upload Proof of Origin Certificate (PDF) *</label>
+            <input type="file" name="originCert" accept=".pdf" required>
+            
+            <button type="submit">Register Commodity Batch</button>
+        </form>
+        
+        <p>Certificates verified per ISO standards (e.g., ISO 22000). Tracking validated via Hyperledger Fabric blockchain. Approval generates TID.</p>
+        <p id="status-message"></p>
+    </section>
+    
+    <footer>
+        <p>© 2025 Sandock Austral Defence. Confidential. Secure Platform.</p>
+    </footer>
+    
+    <script>
+        const form = document.getElementById("commodity-form");
+        const message = document.getElementById("status-message");
+        if (!localStorage.getItem("vendorVerified")) {
+            message.innerText = "Error: Complete Vendor ID Registration first.";
+            form.style.display = "none";
+        } else {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                try {
+                    const response = await fetch("/api/VerifyCommodity", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            iotTrackingId: formData.get("iotTrackingId"),
+                            batchSize: parseInt(formData.get("batchSize"))
+                        }),
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    const result = await response.json();
+                    if (result.commodityVerified) {
+                        localStorage.setItem("commodityVerified", "true");
+                        message.innerText = "Commodity verified! You can now access BMX Trading.";
+                    } else {
+                        message.innerText = result.message || "Verification failed. Ensure valid tracking and batch size.";
+                    }
+                } catch (error) {
+                    message.innerText = "Error: Could not connect to verification service.";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
