@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICTAS Vendor ID Registration</title>
+    <style>
+        /* Basic styling for forms and layout */
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 10px; }
+        form { max-width: 600px; }
+        input, select, button { display: block; margin-bottom: 10px; width: 100%; }
+        #status-message { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ICTAS Beef Vendor Registration & BMX Trading</h1>
+        <p>Secure Platform for Beef Registration and Trading on Botswana Mercantile Exchange</p>
+    </header>
+    
+    <nav>
+        <a href="vendor-id.html">Vendor ID Registration</a>
+        <a href="commodity.html">Commodity Registration</a>
+        <a href="bmx-trading.html">BMX Trading</a>
+    </nav>
+    
+    <section>
+        <h2>Welcome to ICTAS</h2>
+        <p>Register and trade beef on BMX with full traceability and tax compliance. Complies with Botswana laws for KYC/AML, trading regulations, and BURS requirements.</p>
+    </section>
+    
+    <section id="vendor-registration">
+        <h2>Vendor ID Registration (KYC & 2FA)</h2>
+        <p>Comply with Financial Intelligence Act 2019: Identity verification, address proof, business details. Data retained 20 years. All fields marked with * are required.</p>
+        
+        <form id="vendor-form">
+            <label>Full Name *</label>
+            <input type="text" name="fullName" required>
+            
+            <label>Email Address *</label>
+            <input type="email" name="email" required>
+            
+            <label>Password *</label>
+            <input type="password" name="password" required>
+            
+            <label>Phone Number (for 2FA via SMS OTP) *</label>
+            <input type="tel" name="phoneNumber" required>
+            
+            <label>KYC ID Type *</label>
+            <select name="idType" required>
+                <option value="">Select ID Type</option>
+                <option value="National ID">National ID</option>
+                <option value="Passport">Passport</option>
+                <option value="Business License/Registration">Business License/Registration</option>
+            </select>
+            
+            <label>ID Number *</label>
+            <input type="text" name="idNumber" required>
+            
+            <label>Upload KYC Proof Document (PDF/Image) *</label>
+            <input type="file" name="kycProof" accept=".pdf,.jpg,.png" required>
+            
+            <label>Business Address/Proof of Residence *</label>
+            <input type="text" name="businessAddress" required>
+            <button type="button">Get Current Location</button>
+            
+            <label>Directors' Details (for Non-Individuals) *</label>
+            <input type="text" name="directorsDetails" required>
+            
+            <label>Upload Proof of Bank Account (PDF/Image) *</label>
+            <input type="file" name="bankProof" accept=".pdf,.jpg,.png" required>
+            
+            <button type="submit">Register Vendor ID & Setup 2FA</button>
+        </form>
+        
+        <p>After submission, receive SMS OTP for 2FA. KYC review: 24-48 hours. Complies with FIA 2019.</p>
+        <p id="status-message"></p>
+    </section>
+    
+    <footer>
+        <p>© 2025 Sandock Austral Defence. Confidential. Secure Platform.</p>
+    </footer>
+    
+    <script>
+        // This portal is always accessible
+        document.getElementById("vendor-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            try {
+                const response = await fetch("/api/VerifyVendor", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        idNumber: formData.get("idNumber"),
+                        email: formData.get("email")
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                });
+                const result = await response.json();
+                if (result.vendorVerified) {
+                    localStorage.setItem("vendorVerified", "true");
+                    document.getElementById("status-message").innerText = "Vendor ID verified! You can now access Commodity Registration.";
+                } else {
+                    document.getElementById("status-message").innerText = result.message || "Verification failed. Try again.";
+                }
+            } catch (error) {
+                document.getElementById("status-message").innerText = "Error: Could not connect to verification service.";
+            }
+        });
+    </script>
+</body>
+</html>
